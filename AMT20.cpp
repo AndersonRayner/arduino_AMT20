@@ -20,32 +20,37 @@ void AMT20::init()
   return;
 }
 
-void AMT20::read()
+bool AMT20::read()
 {
-  // Read the encoder
+  // Read the encoder.  Returns 1 on success, 0 on failure
+  
   uint8_t ret, msb, lsb, bail;
   ret = 0;
   bail = 0;
 
-  send_command(AMT20_POS);
+  // Send read position command
+  send_command(_cmd_pos);
 
-  while (ret != AMT20_POS) {
-    ret = send_command(AMT20_IDLE);
+  // Response is _cmd_pos when data is ready
+  while (ret != _cmd_pos) {
+    ret = send_command(_cmd_idle);
     bail++;
 
     if (bail >= 10) 
     {
-      break;
+      // Didn't get the response in time
+	  return (0);
     }
   }
 
-  msb = send_command(AMT20_IDLE);
-  lsb = send_command(AMT20_IDLE);
+  msb = send_command(_cmd_idle);
+  lsb = send_command(_cmd_idle);
   
   // Combine bytes to get final value
-  _encoder_raw = (uint16_t)msb << 8 | (uint16_t)lsb;  
+  _encoder_raw = (uint16_t)msb << 8 | (uint16_t)lsb; 
 
-  return;
+  // All done  
+  return (1);
 }
 
 uint16_t AMT20::raw_value()
@@ -59,23 +64,31 @@ float AMT20::angle()
     return (_encoder_angle);
 }
 
-void AMT20::zero()
+bool AMT20::zero()
 {
+
+  // Zeros the AMT20.  Return 1 on success, 0 on failure
+	
   uint8_t ret, bail;
   ret = 0;
   bail = 0;
 
-  send_command(AMT20_ZEROSET);
+  send_command(_cmd_zeroSet);
 
-  while (ret != AMT20_ZERODONE) {
-    ret = send_command(AMT20_IDLE);
+  while (ret != _cmd_zeroed) {
+    ret = send_command(_cmd_idle);
     bail++;
 
     if (bail > 50)
     { 
-      return;
+      // Set failed
+      return (0);
     }
   }
+  
+  // All done
+  return (1);
+  
 }
 
 uint8_t AMT20::send_command(uint8_t command)
@@ -90,7 +103,7 @@ uint8_t AMT20::send_command(uint8_t command)
   _SPI_BUS.endTransaction();
   
   // Need to slow the bus down between reads
-  delayMicroseconds(AMT20_RDELAY);
+  delayMicroseconds(_read_delay);
 
   return (retval);
 }
