@@ -1,7 +1,5 @@
 #include "AMT20.h"
 
-SPISettings SPI_write(AMT20_BUS_SPEED, MSBFIRST, SPI_MODE0);
-
 AMT20::AMT20(SPIClass& AMT20_SPI_BUS, uint8_t AMT20_CS) :
   _SPI_BUS(AMT20_SPI_BUS),
   _CS(AMT20_CS)
@@ -95,15 +93,16 @@ uint8_t AMT20::send_command(uint8_t command)
 {
   uint8_t retval;
 
+  // Need to slow the bus down between reads
+  delayMicroseconds(_read_delay);
+
   // CS needs to be asserted after SPI beginTransaction otherwise funny things with the clock happen...
-  _SPI_BUS.beginTransaction(SPI_write);
+  _SPI_BUS.beginTransaction(SPISettings(_bus_speed, MSBFIRST, SPI_MODE0));
   digitalWrite(_CS, LOW);
   retval = _SPI_BUS.transfer(command);
   digitalWrite(_CS, HIGH);
   _SPI_BUS.endTransaction();
   
-  // Need to slow the bus down between reads
-  delayMicroseconds(_read_delay);
-
+  // All done
   return (retval);
 }

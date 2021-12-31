@@ -1,9 +1,6 @@
 #include <SPI.h>
 #include <stdint.h>
 
-// SPI settings
-#define AMT20_BUS_SPEED 1L*1000*1000
-
 class AMT20 {
   public:
   AMT20(SPIClass& AMT20_SPI_BUS, uint8_t AMT20_CS);
@@ -21,7 +18,7 @@ class AMT20 {
   uint8_t   _CS;
   
   // Read Delay
-  const unsigned int _read_delay = 30;
+  const unsigned int _read_delay = 30;   // Time in [ us ] between reads
 
   // Commands for AMT20
   const uint8_t _cmd_idle = 0x00;
@@ -29,6 +26,9 @@ class AMT20 {
   const uint8_t _cmd_zeroSet = 0x70;
   const uint8_t _cmd_zeroed = 0x80;
   const uint8_t _cmd_noData = 0xA5;
+  
+  // Other
+  const unsigned long _bus_speed = 1L*1000*1000;
 
   // Functions
   uint8_t send_command(uint8_t command);
