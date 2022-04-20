@@ -1,10 +1,4 @@
 // Software for running the AMT20 rotary encoder
-//
-// Currently only tested on Arduino Pro Mini
-//
-// Highest known working Arduino versions
-// Arduino  : 1.6.9
-// AVR core : 1.6.16
 
 #include <SPI.h>
 
@@ -17,7 +11,7 @@ AMT20 amt20(SPI,CS_ENCODER);
 void setup() {
 
   Serial.begin(115200);
-  Serial.print("Starting airspeed card\n");
+  Serial.print("Starting AMT203-V Demo Program\n");
 
   // start encoder
   SPI.begin();
