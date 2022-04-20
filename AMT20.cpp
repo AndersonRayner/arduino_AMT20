@@ -75,12 +75,12 @@ bool AMT20::zero()
 
   while (ret != _cmd_zeroed) {
 
-    delay(10);
+    delay(2);
     
     ret = send_command(_cmd_idle);
     bail++;
 
-    if (bail > 10)
+    if (bail > 20)
     { 
       // Set failed
       return (0);
@@ -100,6 +100,7 @@ uint8_t AMT20::send_command(uint8_t command)
   delayMicroseconds(_read_delay);
 
   // CS needs to be asserted after SPI beginTransaction otherwise funny things with the clock happen...
+  // We also need to delay a little after asserting the CS for faster MCUs that are too quick for the AMT
   _SPI_BUS.beginTransaction(SPISettings(_bus_speed, MSBFIRST, SPI_MODE0));
   digitalWrite(_CS, LOW);
   delayMicroseconds(1);
