@@ -74,10 +74,13 @@ bool AMT20::zero()
   send_command(_cmd_zeroSet);
 
   while (ret != _cmd_zeroed) {
+
+    delay(10);
+    
     ret = send_command(_cmd_idle);
     bail++;
 
-    if (bail > 50)
+    if (bail > 10)
     { 
       // Set failed
       return (0);

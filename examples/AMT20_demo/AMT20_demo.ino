@@ -18,16 +18,33 @@ void setup() {
   amt20.init();
 
   // zero encoder
-  amt20.zero();
+  if (amt20.zero())
+  {
+    Serial.print("  AMT203-V successfully zeroed\n");
+  }
+  else
+  {
+    Serial.print("  AMT203-V zero'ing wasn't successful...\n");
+  }
+
+  delay(50);
 
 }
 
 
 void loop() {
-  amt20.read();
-  
-  //Serial.print(amt20.raw_value()); Serial.print("\n");
-  Serial.print(amt20.angle()    ); Serial.print("\n");
 
-  delay(10);
+  if (amt20.read())
+  {
+    //Serial.print(amt20.raw_value()); Serial.print("\n");
+    Serial.print(amt20.angle()    ); Serial.print("\n");
+  } 
+  else
+  {
+    Serial.print("  AMT203-V read failed!\n");
+  }
+  
+  // Slow the program down a bit for readability, this sensor is fast
+  delay(100);
+  
 }
